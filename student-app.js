@@ -19,7 +19,7 @@ import {
 // this one server-side check elsewhere).
 // Replace with your actual Worker URL after deploying it — see the
 // Cloudflare Worker setup steps.
-const ATTENDANCE_WORKER_URL = "https://pamsu-attendance.YOUR-SUBDOMAIN.workers.dev";
+const ATTENDANCE_WORKER_URL = "https://pamsu-attendance.layannoriel9.workers.dev";
 
 // ---------------------------------------------------------------------
 // LOGIN PAGE (index.html): sign in / enroll
