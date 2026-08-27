@@ -211,11 +211,45 @@ if (uploadBtn) {
       const data = await file.arrayBuffer();
       const workbook = XLSX.read(data, { type: "array" });
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(sheet);
-      // Expected columns: studentNumber, fullName, section
-      const valid = rows.filter((r) => r.studentNumber && r.fullName);
+      const rawRows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+
+      if (!rawRows.length) {
+        alert("The sheet appears to be empty, or the data doesn't start on the first row.");
+        return;
+      }
+
+      // Normalize each row's keys: strip a UTF-8 BOM character some
+      // spreadsheet apps silently prepend to the first header cell, trim
+      // whitespace, lowercase, and strip ALL internal spaces/underscores
+      // so "Student Number", "student_number", and "studentNumber" all
+      // normalize to the same "studentnumber" key. Real-world exports
+      // rarely match a required camelCase header exactly — this handles
+      // the common variations instead of requiring hand-renamed columns.
+      const normalizeKey = (k) =>
+        k.replace(/^\uFEFF/, "").trim().toLowerCase().replace(/[\s_-]+/g, "");
+      const rows = rawRows.map((row) => {
+        const out = {};
+        for (const key in row) {
+          out[normalizeKey(key)] = typeof row[key] === "string" ? row[key].trim() : row[key];
+        }
+        return out;
+      });
+
+      const valid = rows
+        .filter((r) => r.studentnumber && r.fullname)
+        .map((r) => ({
+          studentNumber: r.studentnumber,
+          fullName: r.fullname,
+          section: r.section
+        }));
+
       if (!valid.length) {
-        alert("No valid rows found. Expected columns: studentNumber, fullName, section.");
+        const foundHeaders = Object.keys(rows[0] || {}).join(", ") || "(none detected)";
+        alert(
+          `No valid rows found. Expected columns: studentNumber, fullName, section.\n\n` +
+          `Headers actually found in your file: ${foundHeaders}\n\n` +
+          `Check for typos, or that data starts on row 1.`
+        );
         return;
       }
 
@@ -286,4 +320,5 @@ if (logoutBtn) {
     await signOut(auth);
     window.location.href = "index.html";
   });
-}
+                   }
+                                               
