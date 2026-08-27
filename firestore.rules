@@ -1,0 +1,78 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null && 
+        (exists(/databases/$(database)/documents/admins/$(request.auth.uid)) || 
+         request.auth.token.admin == true);
+    }
+
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // Student Profiles
+    match /students/{studentId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.auth.uid == studentId;
+
+      // Students may only update non-security fields on their own profile
+      // (e.g. contact info). deviceId and faceEmbeddings must never be
+      // student-writable from the client, or the anti-proxy protections
+      // (device lock + biometric match) can be trivially bypassed.
+      // Only an admin can reset those two fields (device unbind flow).
+      allow update: if isAdmin() ||
+        (isOwner(studentId) &&
+         !request.resource.data.diff(resource.data).affectedKeys()
+           .hasAny(['deviceId', 'faceEmbeddings', 'studentNumber']));
+    }
+
+    // Admin Profiles
+    // A signed-in user must be able to read their OWN admin doc to find
+    // out whether they're an admin in the first place (both admin-app.js
+    // login and the isAdmin() check above depend on this). Without this,
+    // isAdmin()'s exists() check itself gets denied for every non-admin
+    // and legitimate admins can't self-verify on first login either.
+    match /admins/{adminId} {
+      allow get: if isOwner(adminId) || isAdmin();
+      allow list: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Roster staging (bulk import from admin dashboard; does not create
+    // Auth accounts — see admin-app.js for why)
+    match /studentsRoster/{rosterId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Attendance Sessions
+    // Students query this with a compound where("section","==",..)
+    // + where("status","==","open") filter (see student-app.js
+    // loadActiveSessions) — Firestore will require you to create a
+    // composite index for that query the first time it runs; follow the
+    // link Firestore prints in the browser console to create it.
+    match /attendanceSessions/{sessionId} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+
+    // Attendance Records
+    // NOTE: real records are written by the verifyAndRecordAttendance Cloud
+    // Function using the Admin SDK, which bypasses these rules entirely.
+    // This "allow create: if isAdmin()" only governs writes attempted
+    // directly from a client SDK (e.g. the admin dashboard), and blocks
+    // students from ever writing their own attendance record directly.
+    match /attendanceRecords/{recordId} {
+      allow read: if request.auth != null;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Excuse Letters
+    match /excuseLetters/{letterId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.resource.data.studentId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+  }
+}

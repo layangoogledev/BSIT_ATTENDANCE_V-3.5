@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Control Center - PamSU BSIT</title>
+  <link rel="stylesheet" href="tech-theme.css">
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+</head>
+<body class="bg-grid">
+  <nav class="top-nav glass-card">
+    <div class="nav-brand">Admin Master Control</div>
+    <div class="user-meta">
+      <span class="status-pill success">Faculty Admin</span>
+      <button id="btn-admin-logout" class="btn-small btn-danger">Logout</button>
+    </div>
+  </nav>
+
+  <main class="dashboard-container">
+    <!-- Live Session Control Panel -->
+    <section class="glass-card admin-panel">
+      <h3>Active Attendance Session Control</h3>
+      <form id="session-gen-form" class="grid-4">
+        <select id="session-subject" required>
+          <option value="IT101">IT101 - Introduction to Computing</option>
+          <option value="IT201">IT201 - Data Structures & Algorithms</option>
+          <option value="IT301">IT301 - Information Assurance & Security</option>
+        </select>
+        <select id="session-mode" required>
+          <option value="f2f">Face-to-Face (Geofenced)</option>
+          <option value="online">Online Mode (Remote)</option>
+        </select>
+        <button type="submit" class="btn-primary glow-cyan">Generate 4-Digit Code</button>
+        <div class="code-display">Code: <span id="active-code">----</span></div>
+      </form>
+    </section>
+
+    <!-- Live Monitor Table -->
+    <section class="glass-card monitor-panel">
+      <div class="panel-header">
+        <h3>Real-time Attendance Monitor</h3>
+        <button id="btn-export-excel" class="btn-secondary">Export Weekly Summary (.csv)</button>
+      </div>
+      <div class="table-wrapper">
+        <table class="tech-table">
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>Name</th>
+              <th>Section</th>
+              <th>Check-In Time</th>
+              <th>Status</th>
+              <th>Face Distance</th>
+            </tr>
+          </thead>
+          <tbody id="attendance-live-rows">
+            <!-- Dynamic Realtime Data -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Roster Importer & Device Unbinder -->
+    <section class="grid-2">
+      <div class="glass-card">
+        <h3>Batch Roster Importer</h3>
+        <p class="text-muted">Import student rosters via Excel/CSV spreadsheet.</p>
+        <input type="file" id="excel-file-input" accept=".xlsx, .csv" />
+        <button id="btn-upload-excel" class="btn-primary glow-emerald">Parse & Import</button>
+      </div>
+
+      <div class="glass-card">
+        <h3>Device Binding Manager</h3>
+        <p class="text-muted">Reset hardware lockouts for students switching phones.</p>
+        <div class="input-group">
+          <input type="text" id="unbind-std-id" placeholder="Enter 10-Digit Student ID" />
+          <button id="btn-unbind-device" class="btn-secondary">Unbind Device ID</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="admin-app.js"></script>
+</body>
+</html>

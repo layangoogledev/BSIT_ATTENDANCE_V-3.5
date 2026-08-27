@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PamSU BSIT Attendance Portal</title>
+  <link rel="stylesheet" href="tech-theme.css">
+</head>
+<body class="bg-grid">
+  <div class="portal-wrapper">
+    <div class="glass-card main-auth-card">
+      <div class="brand-header">
+        <div class="pamsu-badge">PamSU Mexico</div>
+        <h2>BSIT 1A ONLY</h2>
+        <p class="subtitle">Bachelor of Science in Information Technology</p>
+      </div>
+
+      <div class="tab-switcher">
+        <button id="tab-student" class="tab-btn active" onclick="switchTab('student')">Student Portal</button>
+        <button id="tab-admin" class="tab-btn" onclick="switchTab('admin')">Faculty / Admin</button>
+      </div>
+
+      <!-- Student Section -->
+      <div id="student-section" class="tab-content active">
+        <div class="auth-toggle">
+          <button id="btn-login-mode" class="sub-tab active" onclick="setAuthMode('login')">Sign In</button>
+          <button id="btn-signup-mode" class="sub-tab" onclick="setAuthMode('signup')">Enroll Device</button>
+        </div>
+
+        <form id="student-form" class="tech-form">
+          <div class="input-group">
+            <label>10-Digit Student Number</label>
+            <input type="text" id="std-number" placeholder="e.g., 2026101928" pattern="\d{10}" required />
+          </div>
+          <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="std-password" placeholder="••••••••" required />
+          </div>
+          <div id="signup-fields" class="signup-only hidden">
+            <div class="input-group">
+              <label>Full Name</label>
+              <input type="text" id="std-name" placeholder="Juan Dela Cruz" />
+            </div>
+            <div class="input-group">
+              <label>BSIT Section</label>
+              <select id="std-section">
+                <option value="BSIT-1A">BSIT - 1A</option>
+                <option value="BSIT-1B">BSIT - 1B</option>
+                <option value="BSIT-2A">BSIT - 2A</option>
+                <option value="BSIT-3A">BSIT - 3A</option>
+                <option value="BSIT-4A">BSIT - 4A</option>
+              </select>
+            </div>
+            <div class="biometric-capture-box">
+              <p class="box-label">Biometric Reference Scan</p>
+              <button type="button" id="btn-scan-face" class="btn-secondary">Capture Face Embeddings</button>
+              <span id="face-status" class="status-pill warn">Pending Capture</span>
+            </div>
+          </div>
+          <button type="submit" id="btn-student-submit" class="btn-primary glow-cyan">Sign In</button>
+        </form>
+      </div>
+
+      <!-- Admin Section -->
+      <div id="admin-section" class="tab-content hidden">
+        <form id="admin-form" class="tech-form">
+          <div class="input-group">
+            <label>Faculty Email</label>
+            <input type="email" id="admin-email" placeholder="faculty@pamsu.edu.ph" required />
+          </div>
+          <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="admin-password" placeholder="••••••••" required />
+          </div>
+          <button type="submit" class="btn-primary glow-emerald">Authenticate Admin</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="ui-common.js"></script>
+  <script type="module" src="student-app.js"></script>
+  <script type="module" src="admin-app.js"></script>
+</body>
+</html>

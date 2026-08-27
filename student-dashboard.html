@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard - PamSU BSIT</title>
+  <link rel="stylesheet" href="tech-theme.css">
+</head>
+<body class="bg-grid">
+  <nav class="top-nav glass-card">
+    <div class="nav-brand">PamSU BSIT Attendance</div>
+    <div class="user-meta">
+      <span id="user-display-name">Loading...</span>
+      <button id="btn-logout" class="btn-small btn-danger">Logout</button>
+    </div>
+  </nav>
+
+  <main class="dashboard-container">
+    <section class="quick-actions grid-2">
+      <div class="glass-card status-card">
+        <h3>Class Schedule & Check-In</h3>
+        <p class="text-muted">Select an active class session to verify attendance.</p>
+        <div id="active-classes-list" class="class-list">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <div class="glass-card announcements-card">
+        <h3>Campus Announcements</h3>
+        <div id="announcement-feed" class="feed-list">
+          <div class="feed-item">
+            <span class="feed-date">Aug 27, 2026</span>
+            <p> Wala pang Announcement hintay hintay lang.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass-card excuse-section">
+      <h3>Submit Excuse Letter</h3>
+      <form id="excuse-form" class="tech-form inline-form">
+        <select id="excuse-subject" required>
+          <option value="">Select Subject</option>
+        </select>
+        <input type="date" id="excuse-date" required />
+        <textarea id="excuse-reason" placeholder="State reason for absence..." required></textarea>
+        <input type="file" id="excuse-file" accept="image/*" />
+        <button type="submit" class="btn-primary glow-cyan">Submit Letter</button>
+      </form>
+    </section>
+  </main>
+
+  <!-- Live Verification Modal -->
+  <div id="checkin-modal" class="modal-backdrop hidden">
+    <div class="glass-card modal-content">
+      <h3>Biometric & Spatial Verification</h3>
+      <div class="scanner-viewport">
+        <video id="webcam-feed" autoplay muted playsinline></video>
+        <div class="scanner-laser"></div>
+        <div class="radar-overlay"></div>
+      </div>
+      <div class="verification-steps">
+        <div id="step-device" class="v-step">Device Fingerprint check</div>
+        <div id="step-face" class="v-step">Biometric Face match</div>
+        <div id="step-geo" class="v-step">Campus Geofence (150m)</div>
+      </div>
+      <div id="code-input-group" class="input-group hidden">
+        <label>Enter 4-Digit Session Code</label>
+        <input type="text" id="session-code" maxlength="4" placeholder="0000" />
+      </div>
+      <div class="modal-actions">
+        <button id="btn-verify-now" class="btn-primary glow-emerald">Verify & Check-In</button>
+        <button id="btn-close-modal" class="btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="student-app.js"></script>
+</body>
+</html>

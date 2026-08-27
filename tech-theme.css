@@ -1,0 +1,595 @@
+/* ==========================================================================
+   MATRIX DIGITAL RAIN — HIGH-TECH THEME (PAMSU BSIT ATTENDANCE PORTAL)
+   Inspired by Authentic Terminal & Matrix Glyph Stream Aesthetic
+   ========================================================================== */
+
+:root {
+  --matrix-black: #020703;
+  --matrix-bg-dark: #040d06;
+  --matrix-surface: rgba(4, 18, 8, 0.78);
+  --glass-border: rgba(0, 255, 65, 0.25);
+  --glass-border-glow: rgba(0, 255, 65, 0.75);
+  
+  /* Matrix Color Palette */
+  --matrix-green-dim: #003b00;
+  --matrix-green: #00ff41;
+  --matrix-green-bright: #33ff66;
+  --matrix-green-glow: #00ff66;
+  --matrix-head-glyph: #d4ffda;
+  
+  /* Accent States */
+  --matrix-amber: #ffb703;
+  --matrix-red: #ff003c;
+  --matrix-cyan: #00f2fe;
+  
+  /* Text */
+  --text-main: #e8ffe9;
+  --text-muted: #52a357;
+  --text-dim: #216125;
+  
+  --font-mono: 'Fira Code', 'Consolas', 'Courier New', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-mono);
+  user-select: none;
+}
+
+body {
+  background-color: var(--matrix-black);
+  color: var(--text-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ==========================================================================
+   AUTHENTIC MATRIX DIGITAL RAIN BACKGROUND & GLYPH STREAMS
+   ========================================================================== */
+
+.bg-grid {
+  background-color: var(--matrix-black);
+  position: relative;
+}
+
+/* Layer 1: Simulated Cascading Matrix Rain Columns (SVG Encoded Glyphs) */
+.bg-grid::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 200vh;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='600' viewBox='0 0 120 600'%3E%3Ctext x='10' y='30' fill='%2300ff41' font-family='monospace' font-size='16' opacity='0.9'%3E%C6%B5%3C/text%3E%3Ctext x='10' y='60' fill='%2300ff41' font-family='monospace' font-size='16' opacity='0.4'%3E%D8%A1%3C/text%3E%3Ctext x='10' y='90' fill='%2300ff41' font-family='monospace' font-size='16' opacity='0.7'%3E%D1%A1%3C/text%3E%3Ctext x='10' y='120' fill='%23d4ffda' font-family='monospace' font-size='16'%3E%C6%B4%3C/text%3E%3Ctext x='10' y='180' fill='%2300ff41' font-family='monospace' font-size='16' opacity='0.5'%3E%C8%A0%3C/text%3E%3Ctext x='10' y='240' fill='%2300ff41' font-family='monospace' font-size='16' opacity='0.8'%3E%CE%A9%3C/text%3E%3Ctext x='50' y='15' fill='%23d4ffda' font-family='monospace' font-size='16'%3E%D0%B6%3C/text%3E%3Ctext x='50' y='45' fill='%2300ff41' font-family='monospace' font-size='16' opacity='0.6'%3E5%3C/text%3E%3Ctext x='50' y='75' fill='%2300ff41' font-family='monospace' font-size='16' opacity='0.3'%3E%C4%A7%3C/text%3E%3Ctext x='50' y='135' fill='%2300ff41' font-family='monospace' font-size='16' opacity='0.9'%3E%C6%B1%3C/text%3E%3Ctext x='50' y='210' fill='%2300ff41' font-family='monospace' font-size='16' opacity='0.4'%3E%CE%A8%3C/text%3E%3Ctext x='90' y='50' fill='%2300ff41' font-family='monospace' font-size='16' opacity='0.7'%3E%C6%A4%3C/text%3E%3Ctext x='90' y='110' fill='%23d4ffda' font-family='monospace' font-size='16'%3E%D0%AE%3C/text%3E%3Ctext x='90' y='160' fill='%2300ff41' font-family='monospace' font-size='16' opacity='0.5'%3E%C6%AE%3C/text%3E%3Ctext x='90' y='220' fill='%2300ff41' font-family='monospace' font-size='16' opacity='0.8'%3E%CE%9E%3C/text%3E%3C/svg%3E");
+  background-repeat: repeat;
+  animation: matrixRainCascade 12s linear infinite;
+}
+
+@keyframes matrixRainCascade {
+  0% { transform: translateY(-50%); }
+  100% { transform: translateY(0%); }
+}
+
+/* Layer 2: CRT Scanline Overlay Effect */
+.bg-grid::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%),
+              linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  background-size: 100% 3px, 6px 100%;
+}
+
+/* ==========================================================================
+   MATRIX HUD GLASSMORPHIC CONTAINERS
+   ========================================================================== */
+
+.glass-card {
+  position: relative;
+  background: var(--matrix-surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.9), inset 0 0 15px rgba(0, 255, 65, 0.05);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Matrix Corner Bracket Accents */
+.glass-card::before, .glass-card::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: var(--matrix-green);
+  border-style: solid;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.glass-card::before {
+  top: 0;
+  left: 0;
+  border-width: 2px 0 0 2px;
+}
+
+.glass-card::after {
+  bottom: 0;
+  right: 0;
+  border-width: 0 2px 2px 0;
+}
+
+.glass-card:hover {
+  border-color: var(--glass-border-glow);
+  box-shadow: 0 0 30px rgba(0, 255, 65, 0.25), inset 0 0 20px rgba(0, 255, 65, 0.12);
+  transform: translateY(-2px);
+}
+
+.glass-card:hover::before, .glass-card:hover::after {
+  width: 22px;
+  height: 22px;
+  border-color: var(--matrix-head-glyph);
+  box-shadow: 0 0 10px var(--matrix-green);
+}
+
+/* Layout Structures */
+.portal-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.main-auth-card {
+  width: 100%;
+  max-width: 460px;
+}
+
+.dashboard-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ==========================================================================
+   MATRIX BRANDING & NAVIGATION
+   ========================================================================== */
+
+.brand-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.brand-header h2 {
+  font-size: 1.5rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--matrix-green);
+  text-shadow: 0 0 12px var(--matrix-green-glow), 0 0 24px var(--matrix-green);
+}
+
+.pamsu-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  background: rgba(0, 255, 65, 0.08);
+  border: 1px solid var(--matrix-green);
+  border-radius: 4px;
+  color: var(--matrix-green-bright);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+  animation: matrixGlowPulse 2s infinite alternate;
+}
+
+@keyframes matrixGlowPulse {
+  0% { box-shadow: 0 0 5px rgba(0, 255, 65, 0.2); }
+  100% { box-shadow: 0 0 18px rgba(0, 255, 65, 0.7); }
+}
+
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 24px 0 24px;
+  padding: 16px 24px;
+}
+
+.nav-brand {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--matrix-green);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-shadow: 0 0 10px var(--matrix-green);
+}
+
+.nav-brand::before {
+  content: '⚡';
+  color: var(--matrix-head-glyph);
+  animation: glyphFlicker 1.5s infinite alternate;
+}
+
+@keyframes glyphFlicker {
+  0%, 100% { opacity: 1; text-shadow: 0 0 12px var(--matrix-green); }
+  50% { opacity: 0.4; text-shadow: none; }
+}
+
+/* Tab Controls */
+.tab-switcher, .auth-toggle {
+  display: flex;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid var(--matrix-green-dim);
+  margin-bottom: 20px;
+}
+
+.tab-btn, .sub-tab {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.tab-btn.active, .sub-tab.active {
+  background: rgba(0, 255, 65, 0.15);
+  color: var(--matrix-green-bright);
+  border-color: var(--matrix-green);
+  box-shadow: 0 0 12px rgba(0, 255, 65, 0.3);
+}
+
+/* ==========================================================================
+   MATRIX TERMINAL INPUTS & FORM ELEMENTS
+   ========================================================================== */
+
+.tech-form .input-group {
+  margin-bottom: 18px;
+  position: relative;
+}
+
+.tech-form label {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+
+.tech-form input, .tech-form select, .tech-form textarea {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(0, 10, 2, 0.9);
+  border: 1px solid var(--matrix-green-dim);
+  border-radius: 4px;
+  color: var(--matrix-green-bright);
+  outline: none;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+}
+
+.tech-form input:focus, .tech-form select:focus, .tech-form textarea:focus {
+  border-color: var(--matrix-green);
+  background: rgba(0, 255, 65, 0.05);
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.35), inset 0 0 8px rgba(0, 255, 65, 0.15);
+}
+
+/* ==========================================================================
+   MATRIX GLOW BUTTONS & INTERACTION
+   ========================================================================== */
+
+.btn-primary, .btn-secondary, .btn-small {
+  position: relative;
+  width: 100%;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.glow-cyan, .glow-emerald {
+  background: var(--matrix-green);
+  color: #000;
+  font-weight: 800;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--matrix-green);
+  border: 1px solid var(--matrix-green);
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+}
+
+.btn-danger {
+  background: rgba(255, 0, 60, 0.15);
+  color: var(--matrix-red);
+  border: 1px solid var(--matrix-red);
+}
+
+.btn-primary:hover {
+  background: var(--matrix-green-bright);
+  box-shadow: 0 0 30px rgba(0, 255, 65, 0.85);
+  transform: translateY(-2px);
+}
+
+.btn-secondary:hover {
+  background: rgba(0, 255, 65, 0.2);
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+}
+
+/* ==========================================================================
+   STATUS BADGES & INDICATORS
+   ========================================================================== */
+
+.status-pill {
+  padding: 4px 12px;
+  border-radius: 3px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-pill::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.status-pill.success {
+  background: rgba(0, 255, 65, 0.12);
+  color: var(--matrix-green-bright);
+  border: 1px solid var(--matrix-green);
+}
+
+.status-pill.warn {
+  background: rgba(255, 183, 3, 0.12);
+  color: var(--matrix-amber);
+  border: 1px solid var(--matrix-amber);
+}
+
+.status-pill.danger {
+  background: rgba(255, 0, 60, 0.12);
+  color: var(--matrix-red);
+  border: 1px solid var(--matrix-red);
+}
+
+/* ==========================================================================
+   BIOMETRIC CAMERA SCANNER & MATRIX RADAR VIEWPORT
+   ========================================================================== */
+
+.scanner-viewport {
+  position: relative;
+  width: 100%;
+  height: 260px;
+  background: #000;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--matrix-green);
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+}
+
+#webcam-feed {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: contrast(120%) brightness(90%) hue-rotate(80deg);
+}
+
+.scanner-laser {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--matrix-green-bright), transparent);
+  box-shadow: 0 0 15px var(--matrix-green), 0 0 30px var(--matrix-green);
+  animation: laserScan 2s infinite ease-in-out;
+  z-index: 2;
+}
+
+@keyframes laserScan {
+  0% { top: 0%; opacity: 0.3; }
+  50% { top: 98%; opacity: 1; }
+  100% { top: 0%; opacity: 0.3; }
+}
+
+.radar-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 140px;
+  height: 140px;
+  border: 1px dashed var(--matrix-green);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: matrixRadar 4s linear infinite;
+}
+
+@keyframes matrixRadar {
+  0% { transform: translate(-50%, -50%) rotate(0deg); box-shadow: 0 0 10px rgba(0, 255, 65, 0.2); }
+  50% { box-shadow: 0 0 25px rgba(0, 255, 65, 0.7); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); box-shadow: 0 0 10px rgba(0, 255, 65, 0.2); }
+}
+
+/* Step Verification Indicators */
+.verification-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.v-step {
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.6);
+  border-left: 3px solid var(--text-dim);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  border-radius: 0 4px 4px 0;
+  transition: all 0.3s ease;
+}
+
+.v-step.active {
+  border-left-color: var(--matrix-green);
+  color: #fff;
+  background: rgba(0, 255, 65, 0.1);
+}
+
+.v-step.complete {
+  border-left-color: var(--matrix-green-bright);
+  color: var(--matrix-green-bright);
+}
+
+/* ==========================================================================
+   MATRIX DATA TABLE
+   ========================================================================== */
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 6px;
+  border: 1px solid var(--matrix-green-dim);
+}
+
+.tech-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.8rem;
+}
+
+.tech-table th {
+  background: rgba(0, 255, 65, 0.08);
+  color: var(--matrix-green);
+  padding: 14px 18px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.tech-table td {
+  padding: 12px 18px;
+  border-bottom: 1px solid rgba(0, 255, 65, 0.08);
+  background: rgba(0, 5, 1, 0.6);
+  transition: background 0.2s ease;
+}
+
+.tech-table tbody tr:hover td {
+  background: rgba(0, 255, 65, 0.12);
+}
+
+/* Modal Viewport */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 5, 1, 0.92);
+  backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-content {
+  width: 100%;
+  max-width: 520px;
+}
+
+/* Grid & Responsive Setup */
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; align-items: center; }
+.hidden { display: none !important; }
+
+/* Student Dashboard: active class list + announcement feed
+   (previously referenced in HTML/JS but never styled) */
+.class-list, .feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.class-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(0, 255, 65, 0.06);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+}
+
+.feed-item {
+  padding: 10px 14px;
+  border-left: 2px solid var(--matrix-green-dim);
+  background: rgba(0, 255, 65, 0.04);
+}
+
+.feed-date {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.code-display {
+  font-size: 1.1rem;
+  color: var(--matrix-cyan);
+  letter-spacing: 2px;
+}
+
+@media (max-width: 768px) {
+  .dashboard-container { padding: 16px; gap: 16px; }
+  .top-nav { margin: 12px; padding: 12px 16px; flex-direction: column; gap: 12px; }
+  .grid-2, .grid-4 { grid-template-columns: 1fr; }
+}
