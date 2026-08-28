@@ -19,7 +19,7 @@ import {
 // this one server-side check elsewhere).
 // Replace with your actual Worker URL after deploying it — see the
 // Cloudflare Worker setup steps.
-const ATTENDANCE_WORKER_URL = "https://pamsu-attendance.layannoriel9.workers.dev";
+const ATTENDANCE_WORKER_URL = "https://pamsu-attendance.YOUR-SUBDOMAIN.workers.dev";
 
 // ---------------------------------------------------------------------
 // LOGIN PAGE (index.html): sign in / enroll
@@ -264,12 +264,21 @@ if (verifyBtn) {
       const faceVector = await captureFaceEmbedding(video);
       markStep('step-face', 'complete');
 
-      // Step 3: geofence
-      markStep('step-geo', 'active');
-      const location = await getVerifiedLocation();
-      markStep('step-geo', location.isWithinFence ? 'complete' : 'active');
-      if (selectedSession.classMode === 'f2f' && !location.isWithinFence) {
-        throw new Error(`You're ${Math.round(location.distanceMeters)}m from campus — outside the 150m check-in radius.`);
+      // Step 3: geofence — only relevant for face-to-face sessions.
+      // Online sessions skip the GPS check entirely (both here and on
+      // the server): a remote student has no reason to be near campus,
+      // and requesting a GPS fix needlessly risks a slow/failed location
+      // read blocking an online check-in that never needed it.
+      let location = null;
+      if (selectedSession.classMode === 'f2f') {
+        markStep('step-geo', 'active');
+        location = await getVerifiedLocation();
+        markStep('step-geo', location.isWithinFence ? 'complete' : 'active');
+        if (!location.isWithinFence) {
+          throw new Error(`You're ${Math.round(location.distanceMeters)}m from campus — outside the 150m check-in radius.`);
+        }
+      } else {
+        markStep('step-geo', 'complete');
       }
 
       const sessionCode = document.getElementById('session-code').value.trim();
@@ -298,7 +307,14 @@ if (verifyBtn) {
         sessionId: selectedSession.id,
         deviceFingerprint,
         faceVector,
-        gpsCoords: { latitude: location.latitude, longitude: location.longitude },
+        // Online sessions never had a GPS reading taken — send 0,0 as a
+        // placeholder. The Worker only reads these coordinates inside its
+        // own classMode === "f2f" branch, so this value is never actually
+        // used or checked for online sessions; it exists purely to satisfy
+        // the payload's required-field validation.
+        gpsCoords: location
+          ? { latitude: location.latitude, longitude: location.longitude }
+          : { latitude: 0, longitude: 0 },
         sessionCode
       });
 
@@ -355,4 +371,5 @@ if (logoutBtn) {
     await signOut(auth);
     window.location.href = "index.html";
   });
-}
+        }
+    
