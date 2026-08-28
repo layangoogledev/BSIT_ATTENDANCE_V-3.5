@@ -29,12 +29,33 @@ async function loadFaceApi() {
         document.head.appendChild(script);
       });
     }
-    const MODEL_URL = "https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.12/model";
-    await Promise.all([
-      window.faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-      window.faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-      window.faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
-    ]);
+    // Primary: vladmandic's actively maintained fork. Fallback: the
+    // original justadudewhohacks model repo, served via jsDelivr's GitHub
+    // mode — kept as a second option in case the primary CDN path changes
+    // or is temporarily unavailable.
+    const modelUrls = [
+      "https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.12/model",
+      "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js-models@master/weights"
+    ];
+    let loaded = false;
+    let lastErr = null;
+    for (const MODEL_URL of modelUrls) {
+      try {
+        await Promise.all([
+          window.faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+          window.faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+          window.faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+        ]);
+        loaded = true;
+        break;
+      } catch (modelErr) {
+        lastErr = modelErr;
+      }
+    }
+    if (!loaded) {
+      faceApiLoadPromise = null;
+      throw new Error(`Failed to load face detection models from any CDN. Last error: ${lastErr?.message}`);
+    }
     return window.faceapi;
   })();
 
