@@ -288,20 +288,31 @@ if (verifyBtn) {
 
       const verifyAndRecordAttendance = async (payload) => {
         const idToken = await currentUser.getIdToken();
-        // cache: "no-store" forces this past any intermediate cache
-        // (browser or CDN edge) that might otherwise serve a stale
-        // response for this URL — belt-and-suspenders alongside the
-        // Worker's own no-cache behavior for POST requests.
-        const res = await fetch(ATTENDANCE_WORKER_URL, {
-          method: "POST",
-          cache: "no-store",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${idToken}`,
-          },
-          body: JSON.stringify(payload),
-        });
-        const data = await res.json();
+        let res;
+        try {
+          res = await fetch(ATTENDANCE_WORKER_URL, {
+            method: "POST",
+            cache: "no-store",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${idToken}`,
+            },
+            body: JSON.stringify(payload),
+          });
+        } catch (fetchErr) {
+          throw new Error(`Network request itself failed: ${fetchErr.message}`);
+        }
+
+        const rawText = await res.text();
+        let data;
+        try {
+          data = JSON.parse(rawText);
+        } catch (parseErr) {
+          // Surface the RAW response text so we can see exactly what the
+          // Worker actually sent back, instead of a generic parse error.
+          throw new Error(`Worker response was not valid JSON. HTTP ${res.status}. Raw body: ${rawText.slice(0, 300)}`);
+        }
+
         if (!res.ok) {
           throw new Error(data.message || "Verification request failed.");
         }
@@ -376,4 +387,4 @@ if (logoutBtn) {
     await signOut(auth);
     window.location.href = "index.html";
   });
-          }
+}
