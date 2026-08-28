@@ -287,12 +287,7 @@ if (verifyBtn) {
       }
 
       const verifyAndRecordAttendance = async (payload) => {
-        let idToken;
-        try {
-          idToken = await currentUser.getIdToken();
-        } catch (tokenErr) {
-          throw new Error(`getIdToken() itself failed: ${tokenErr.message}`);
-        }
+        const idToken = await currentUser.getIdToken();
         let res;
         try {
           res = await fetch(ATTENDANCE_WORKER_URL, {
@@ -392,5 +387,5 @@ if (logoutBtn) {
     await signOut(auth);
     window.location.href = "index.html";
   });
-    }
+      }
       
