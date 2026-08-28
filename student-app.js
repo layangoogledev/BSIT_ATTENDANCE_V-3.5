@@ -288,8 +288,13 @@ if (verifyBtn) {
 
       const verifyAndRecordAttendance = async (payload) => {
         const idToken = await currentUser.getIdToken();
+        // cache: "no-store" forces this past any intermediate cache
+        // (browser or CDN edge) that might otherwise serve a stale
+        // response for this URL — belt-and-suspenders alongside the
+        // Worker's own no-cache behavior for POST requests.
         const res = await fetch(ATTENDANCE_WORKER_URL, {
           method: "POST",
+          cache: "no-store",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${idToken}`,
@@ -371,5 +376,4 @@ if (logoutBtn) {
     await signOut(auth);
     window.location.href = "index.html";
   });
-        }
-    
+          }
