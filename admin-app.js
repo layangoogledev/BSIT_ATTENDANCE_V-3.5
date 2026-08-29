@@ -1,11 +1,17 @@
-import { auth, db } from "./firebase-config.js";
+            import { auth, db } from "./firebase-config.js";
 import {
   signInWithEmailAndPassword, signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import {
-  collection, onSnapshot, doc, updateDoc, query, orderBy, addDoc,
+  collection, onSnapshot, doc, updateDoc, deleteDoc, query, orderBy, addDoc,
   serverTimestamp, getDoc, writeBatch, where, getDocs
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+// Same Cloudflare Worker used for attendance verification also handles
+// admin-only actions that need elevated (service-account) permissions —
+// specifically deleting a student's Firebase Auth account, which client
+// JS can never do for another user regardless of admin status.
+const ATTENDANCE_WORKER_URL = "https://pamsu-attendance.layannoriel9.workers.dev";
 
 // ---------------------------------------------------------------------
 // ADMIN LOGIN (index.html)
@@ -64,6 +70,7 @@ function initAdminDashboard() {
       return;
     }
     startLiveMonitor();
+    startScheduleMonitor();
   });
 }
 
@@ -312,6 +319,146 @@ if (unbindBtn) {
   });
 }
 
+// --- Class Schedule ---
+
+const DAY_NAMES = ["", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const scheduleRows = document.getElementById('schedule-rows');
+
+function startScheduleMonitor() {
+  if (!scheduleRows) return;
+  const q = query(collection(db, "classSchedules"), orderBy("dayOfWeek"));
+  onSnapshot(q, (snapshot) => {
+    scheduleRows.innerHTML = "";
+    snapshot.forEach((docSnap) => {
+      const s = docSnap.data();
+      const tr = document.createElement('tr');
+      appendCell(tr, s.subjectLabel || s.subject);
+      appendCell(tr, s.classMode === 'f2f' ? 'Face-to-Face' : 'Online');
+      appendCell(tr, DAY_NAMES[s.dayOfWeek] || s.dayOfWeek);
+      appendCell(tr, s.time);
+
+      const actionTd = document.createElement('td');
+      const delBtn = document.createElement('button');
+      delBtn.className = 'btn-small btn-danger';
+      delBtn.textContent = 'Delete';
+      delBtn.addEventListener('click', async () => {
+        if (!confirm(`Remove ${s.subjectLabel || s.subject} on ${DAY_NAMES[s.dayOfWeek]} ${s.time}?`)) return;
+        try {
+          await deleteDoc(doc(db, "classSchedules", docSnap.id));
+        } catch (err) {
+          alert(`Failed to delete: ${err.message}`);
+        }
+      });
+      actionTd.appendChild(delBtn);
+      tr.appendChild(actionTd);
+
+      scheduleRows.appendChild(tr);
+    });
+  }, (err) => {
+    scheduleRows.innerHTML = `<tr><td colspan="5">Failed to load schedule: ${err.message}</td></tr>`;
+  });
+}
+
+const scheduleForm = document.getElementById('schedule-form');
+if (scheduleForm) {
+  scheduleForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const subjectSelect = document.getElementById('schedule-subject');
+    const subject = subjectSelect.value;
+    const subjectLabel = subjectSelect.options[subjectSelect.selectedIndex].text;
+    const classMode = document.getElementById('schedule-mode').value;
+    const dayOfWeek = parseInt(document.getElementById('schedule-day').value, 10);
+    const time = document.getElementById('schedule-time').value;
+    const submitBtn = scheduleForm.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+
+    try {
+      // Same section-scoping note as live session generation — this demo
+      // targets BSIT-1A only. Extend with a section picker for multi-
+      // section faculty.
+      await addDoc(collection(db, "classSchedules"), {
+        subject,
+        subjectLabel,
+        section: "BSIT-1A",
+        classMode,
+        dayOfWeek,
+        time,
+        createdBy: auth.currentUser.uid,
+        createdAt: serverTimestamp()
+      });
+      scheduleForm.reset();
+      document.getElementById('schedule-day').value = "2";
+      document.getElementById('schedule-time').value = "09:00";
+    } catch (err) {
+      alert(`Failed to add schedule entry: ${err.message}`);
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+}
+
+// --- Remove student ---
+
+const removeBtn = document.getElementById('btn-remove-student');
+if (removeBtn) {
+  removeBtn.addEventListener('click', async () => {
+    const stdNumber = document.getElementById('remove-std-id').value.trim();
+    if (!stdNumber) return alert("Please enter a Student ID");
+
+    if (!confirm(
+      `Permanently remove student ${stdNumber}? This deletes their profile ` +
+      `and login access. Their attendance history is kept.`
+    )) return;
+
+    removeBtn.disabled = true;
+    try {
+      const q = query(collection(db, "students"), where("studentNumber", "==", stdNumber));
+      const snap = await getDocs(q);
+      if (snap.empty) {
+        alert(`No student found with ID: ${stdNumber}`);
+        return;
+      }
+      const studentDocId = snap.docs[0].id; // this is the student's Auth uid
+
+      // Step 1: delete the Firestore profile (client can do this directly —
+      // firestore.rules already scopes update/delete-adjacent access to
+      // admins for this collection).
+      await deleteDoc(doc(db, "students", studentDocId));
+
+      // Step 2: delete their Firebase Auth account via the Worker, since
+      // client JS can never delete another user's Auth account — only the
+      // Worker's service account has the elevated access this requires.
+      const idToken = await auth.currentUser.getIdToken();
+      const res = await fetch(`${ATTENDANCE_WORKER_URL}/admin/delete-student`, {
+        method: "POST",
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ uid: studentDocId }),
+      });
+      const rawText = await res.text();
+      let data;
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        throw new Error(`Worker response was not valid JSON. HTTP ${res.status}. Raw: ${rawText.slice(0, 300)}`);
+      }
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to delete login access.");
+      }
+
+      alert(`Student ${stdNumber} removed. Profile deleted and login access revoked.`);
+      document.getElementById('remove-std-id').value = "";
+    } catch (err) {
+      alert(`Error removing student: ${err.message}`);
+    } finally {
+      removeBtn.disabled = false;
+    }
+  });
+}
+
 // --- Logout ---
 
 const logoutBtn = document.getElementById('btn-admin-logout');
@@ -320,5 +467,5 @@ if (logoutBtn) {
     await signOut(auth);
     window.location.href = "index.html";
   });
-                   }
-                                               
+                             }
+        
