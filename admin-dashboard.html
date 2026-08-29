@@ -35,6 +35,50 @@
       </form>
     </section>
 
+    <!-- Class Schedule -->
+    <section class="glass-card admin-panel">
+      <h3>Class Schedule</h3>
+      <p class="text-muted">Plan recurring class sessions in advance.</p>
+      <form id="schedule-form" class="grid-4">
+        <select id="schedule-subject" required>
+          <option value="IT101">IT101 - Introduction to Computing</option>
+          <option value="IT201">IT201 - Data Structures & Algorithms</option>
+          <option value="IT301">IT301 - Information Assurance & Security</option>
+        </select>
+        <select id="schedule-mode" required>
+          <option value="f2f">Face-to-Face (Geofenced)</option>
+          <option value="online">Online Mode (Remote)</option>
+        </select>
+        <select id="schedule-day" required>
+          <option value="1">Sunday</option>
+          <option value="2" selected>Monday</option>
+          <option value="3">Tuesday</option>
+          <option value="4">Wednesday</option>
+          <option value="5">Thursday</option>
+          <option value="6">Friday</option>
+          <option value="7">Saturday</option>
+        </select>
+        <input type="time" id="schedule-time" required value="09:00" />
+        <button type="submit" class="btn-primary glow-cyan">Add to Schedule</button>
+      </form>
+      <div class="table-wrapper">
+        <table class="tech-table">
+          <thead>
+            <tr>
+              <th>Subject</th>
+              <th>Mode</th>
+              <th>Day</th>
+              <th>Time</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="schedule-rows">
+            <!-- Dynamic schedule list -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
     <!-- Live Monitor Table -->
     <section class="glass-card monitor-panel">
       <div class="panel-header">
@@ -78,8 +122,18 @@
         </div>
       </div>
     </section>
+
+    <!-- Remove Student -->
+    <section class="glass-card">
+      <h3>Remove Student</h3>
+      <p class="text-muted">Permanently deletes the student's profile and login access. Attendance history is kept for reporting.</p>
+      <div class="input-group">
+        <input type="text" id="remove-std-id" placeholder="Enter 10-Digit Student ID" />
+        <button id="btn-remove-student" class="btn-danger">Remove Student</button>
+      </div>
+    </section>
   </main>
-   <script type="module" src="index.js"></script>
+
   <script type="module" src="admin-app.js"></script>
 </body>
 </html>
